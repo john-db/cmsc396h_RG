@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "MyPlugin1",
+  "version": "1.0",
+
+  "description": ".",
+
+  "permissions": [
+    "find",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>",
+    "dns"
+  ],
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
