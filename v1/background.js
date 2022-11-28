@@ -34,7 +34,7 @@ async function logSubject(details, results) {
 
 browser.storage.local.get().then(results => {
   // Initialize the saved stats if not yet initialized.
-  if (!results.stats) {
+  if (typeof results.data == "undefined") {
     results = {
       data: new Array()
     };
