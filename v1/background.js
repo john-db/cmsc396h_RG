@@ -1,4 +1,4 @@
-async function logSubject(details) {
+async function logSubject(details, results) {
     try {
         let securityInfo = await browser.webRequest.getSecurityInfo(details.requestId, {
             certificateChain: true
@@ -18,13 +18,34 @@ async function logSubject(details) {
         console.log(" ")
         console.log(" ")
         console.log(" ")
+
+        //Updates the data
+        results.data.push([host,
+                           details.tabId,
+                           securityInfo.isExtendedValidation
+                          ]);
+        browser.storage.local.set(results).then(console.log("Successfully updated data"));
+
     }
     catch (error) {
         console.error(error);
     }
 }
 
-browser.webRequest.onHeadersReceived.addListener(logSubject,
-    {urls: ["<all_urls>"]},
-    ["blocking"]
-);
+browser.storage.local.get().then(results => {
+  // Initialize the saved stats if not yet initialized.
+  if (typeof results.data == "undefined") {
+    results = {
+      data: new Array()
+    };
+    results.data.push(["hostname",
+                      "tabId",
+                      "isExtendedValidation"
+                    ]);
+  }
+
+  browser.webRequest.onHeadersReceived.addListener(details => logSubject(details, results),
+      {urls: ["<all_urls>"]},
+      ["blocking"]
+    );
+});

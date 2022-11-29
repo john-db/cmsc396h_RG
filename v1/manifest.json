@@ -5,13 +5,20 @@
 
   "description": ".",
 
+  "browser_action": {
+    "default_icon": "icons/page-32.png",
+    "default_title": "temp name",
+    "default_popup": "popup/my_popup.html"
+  },
+
   "permissions": [
     "find",
     "tabs",
     "webRequest",
     "webRequestBlocking",
     "<all_urls>",
-    "dns"
+    "dns",
+    "storage"
   ],
 
   "background": {
