@@ -14,6 +14,7 @@
   "permissions": [
     "find",
     "tabs",
+    "webNavigation",
     "webRequest",
     "webRequestBlocking",
     "<all_urls>",
@@ -22,13 +23,13 @@
   ],
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["js/background.js"]
   },
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["js/content.js"]
     }
   ]
 }
