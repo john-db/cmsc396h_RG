@@ -1,29 +1,26 @@
 const logSubject = async details => {
-    try {
-        let securityInfo = await browser.webRequest.getSecurityInfo(details.requestId, {
-            certificateChain: true,
-            rawDER: true
-        });
-        console.log(securityInfo);
+  try {
+    let securityInfo = await browser.webRequest.getSecurityInfo(details.requestId, {
+      certificateChain: true,
+      rawDER: true
+    });
 
-        // console.log("check if this DNS record is issued by TRR (Trusted Recursive Resolver)");
-        // if(typeof details.originUrl !== 'undefined') {
-        //   let host = (new URL(details.originUrl)).hostname;
-        //   console.log(host);
-        //   let res = await browser.dns.resolve(host);
-        //   console.log(res);
-        // }
-
-        //Updates the data
-        let data = (await browser.storage.local.get("data")).data;
-        updateData(data, details, securityInfo);
-
-        //console.log(data);
-        browser.storage.local.set({data}).then(console.log("SecurityInfo Logged Successfully"), error => {console.error(error);});
+    // console.log("check if this DNS record is issued by TRR (Trusted Recursive Resolver)");
+    if(typeof details.originUrl !== 'undefined') {
+      let host = (new URL(details.originUrl)).hostname;
+      console.log(host);
+      let res = await browser.dns.resolve(host);
+      console.log(res);
     }
-    catch (error) {
-        console.error(error);
-    }
+
+    //Updates the data
+    let data = (await browser.storage.local.get("data")).data;
+    updateData(data, details, securityInfo);
+    browser.storage.local.set({data}).then(console.log("SecurityInfo Logged Successfully"), error => {console.error(error);});
+  }
+  catch (error) {
+    console.error(error);
+  }
 };
 
 const logOnBeforeNavigate = async details => {
@@ -31,14 +28,14 @@ const logOnBeforeNavigate = async details => {
     if (details.frameId !== 0) {
       return;
     }  
+
     let hostname = extractHostname(details.url);
     if(hostname.includes("undefined")) {
-      // console.log("undefined host");
-      //this happens when details.url = "about.blank"
+      //this happens when details.url = "about:blank" etc
       return;
     }
-    let data = (await browser.storage.local.get("data")).data;
 
+    let data = (await browser.storage.local.get("data")).data;
     let newRow = [details.tabId, hostname, 0, details.timeStamp, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let index = findLast(details.tabId, data);
     if (index === -1) {
@@ -55,7 +52,7 @@ const logOnBeforeNavigate = async details => {
       }
     }
 
-    browser.storage.local.set({data}).then(console.log("webnav setting success"), error => {console.error(error);});
+    browser.storage.local.set({data}).then(console.log("WebNav set data successfully"), error => {console.error(error);});
   }
   catch (error) {
     console.log(error);
@@ -121,49 +118,6 @@ function updateData(data, details, securityInfo) {
     }
 }
 
-browser.storage.local.get().then(results => {
-  // Initialize the saved stats if not yet initialized.
-  if (typeof results.data == 'undefined') {
-    data = [];
-    data.push(["tabId", 
-              "hostname", 
-              "countRequests", 
-              "timeStamp", 
-              "countSecure", 
-              "countInsecure", 
-              "countBroken", 
-              "countWeak",
-              "countHpkpTrue",
-              "countHpkpFalse",
-              "countHstsTrue",
-              "countHstsFalse",
-              "countIsExtendedValidationTrue",
-              "countIsExtendedValidationFalse"]);
-    browser.storage.local.set({data}).then(console.log("Data initialized Success"), error => {console.error(error);});
-  }
-
-
-});
-
-browser.webNavigation.onBeforeNavigate.addListener(logOnBeforeNavigate);
-
-browser.webRequest.onHeadersReceived.addListener(logSubject,
-  {urls: ["<all_urls>"]},
-  ["blocking"]
-);
-
- //from https://stackoverflow.com/questions/3115982/how-to-check-if-two-arrays-are-equal-with-javascript
-function arraysEqual(a, b) {
-  if (a == null || b == null) return false;
-  if (a === b) return true;
-  if (a.length !== b.length) return false;
-
-  for (var i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false;
-  }
-  return true;
-}
-
 //https://stackoverflow.com/questions/6449340/how-to-get-base-domain-from-the-url-in-javascript
 function extractHostname(url) {
   if (typeof url == 'undefined') {
@@ -214,3 +168,34 @@ function findLast(id, array) {
   }
   return -1;
 }
+
+browser.storage.local.get().then(results => {
+  // Initialize the saved stats if not yet initialized.
+  if (typeof results.data == 'undefined') {
+    data = [];
+    data.push(["tabId", 
+              "hostname", 
+              "countRequests", 
+              "timeStamp", 
+              "countSecure", 
+              "countInsecure", 
+              "countBroken", 
+              "countWeak",
+              "countHpkpTrue",
+              "countHpkpFalse",
+              "countHstsTrue",
+              "countHstsFalse",
+              "countIsExtendedValidationTrue",
+              "countIsExtendedValidationFalse"]);
+    browser.storage.local.set({data}).then(console.log("Data initialized"), error => {console.error(error);});
+  }
+
+
+});
+
+browser.webNavigation.onBeforeNavigate.addListener(logOnBeforeNavigate);
+
+browser.webRequest.onHeadersReceived.addListener(logSubject,
+  {urls: ["<all_urls>"]},
+  ["blocking"]
+);
