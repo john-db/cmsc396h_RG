@@ -5,14 +5,6 @@ const logSubject = async details => {
       rawDER: true
     });
 
-    // console.log("check if this DNS record is issued by TRR (Trusted Recursive Resolver)");
-    if(typeof details.originUrl !== 'undefined') {
-      let host = (new URL(details.originUrl)).hostname;
-      console.log(host);
-      let res = await browser.dns.resolve(host);
-      console.log(res);
-    }
-
     //Updates the data
     let data = (await browser.storage.local.get("data")).data;
     updateData(data, details, securityInfo);
@@ -36,7 +28,7 @@ const logOnBeforeNavigate = async details => {
     }
 
     let data = (await browser.storage.local.get("data")).data;
-    let newRow = [details.tabId, hostname, 0, details.timeStamp, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let newRow = [details.tabId, hostname, 0, details.timeStamp, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let index = findLast(details.tabId, data);
     if (index === -1) {
       data.push(newRow);
@@ -59,7 +51,7 @@ const logOnBeforeNavigate = async details => {
   }
 };
 
-function updateData(data, details, securityInfo) {
+async function updateData(data, details, securityInfo) {
   let hostname;
     if (typeof details.documentUrl == 'undefined') {
       // console.log("docUrl undefined");
@@ -114,6 +106,19 @@ function updateData(data, details, securityInfo) {
         data[index][12] = data[index][12] + 1;
       } else {
         data[index][13] = data[index][13] + 1;
+      }
+    }
+
+     // console.log("check if this DNS record is issued by TRR (Trusted Recursive Resolver)");
+     if(typeof details.originUrl !== 'undefined') {
+      let host = (new URL(details.originUrl)).hostname;
+      console.log(host);
+      let res = (await browser.dns.resolve(host));
+      console.log(res);
+      if (res.isTRR === true) {
+        data[index][14] = data[index][14] + 1;
+      } else {
+        data[index][15] = data[index][15] + 1;
       }
     }
 }
@@ -176,7 +181,9 @@ browser.storage.local.get().then(results => {
               "countHstsTrue",
               "countHstsFalse",
               "countIsExtendedValidationTrue",
-              "countIsExtendedValidationFalse"]);
+              "countIsExtendedValidationFalse",
+              "countIsTRRTrue",
+              "countIsTRRFalse"]);
     browser.storage.local.set({data}).then(console.log("Data initialized"), error => {console.error(error);});
   }
 
