@@ -118,29 +118,19 @@ function updateData(data, details, securityInfo) {
     }
 }
 
-//https://stackoverflow.com/questions/6449340/how-to-get-base-domain-from-the-url-in-javascript
 function extractHostname(url) {
   if (typeof url == 'undefined') {
     return "undefined";
   }
-  let hostname;
+  let myUrl = new URL(url);
+  let hostname = myUrl.hostname;
 
-  //find & remove protocol (http, ftp, etc.) and get hostname
-  if (url.indexOf("://") > -1) {
-    hostname = url.split('/')[2];
-  }else {
-    hostname = url.split('/')[0];
+  let i = hostname.indexOf("www");
+  if (i !== -1) {
+    let temp = hostname.slice(i + 1, hostname.length);
+    let j = temp.indexOf(".");
+    return temp.slice(j + 1, temp.length);
   }
-
-  //find & remove port number
-  hostname = hostname.split(':')[0];
-
-  //find & remove "?"
-  hostname = hostname.split('?')[0];
-
-  let hostnames = hostname.split('.');
-  hostname = hostnames[hostnames.length-2] + '.' + hostnames[hostnames.length-1];
-
   return hostname;
 }
 
