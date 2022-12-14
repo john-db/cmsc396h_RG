@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 import pandas as pd
 import time
 import os
@@ -19,7 +20,7 @@ websites = sites["Domain"].apply(lambda x: "https://" + x)
 
 
 #block popups
-options=webdriver.firefox.options.Options()
+options=Options()
 options.set_preference("dom.popup_maximum", 0)
 
 
