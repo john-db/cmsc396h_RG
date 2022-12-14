@@ -8,11 +8,23 @@ scraper_folder = os.path.dirname(__file__)
 project_folder = os.path.dirname(scraper_folder)
 
 # reads data from csv obatained from https://moz.com/top500
-sites = pd.read_csv(scraper_folder + "/top500Domains.csv")
-sites["Root Domain"] = sites["Root Domain"].astype("string")
-websites = sites["Root Domain"].apply(lambda x: "https://" + x)
+# sites = pd.read_csv(scraper_folder + "/top500Domains.csv")
+# sites["Root Domain"] = sites["Root Domain"].astype("string")
+# websites = sites["Root Domain"].apply(lambda x: "https://" + x)
 
-driver = webdriver.Firefox()
+# reads data from csv obatained from https://majestic.com/reports/majestic-million
+sites = pd.read_csv(scraper_folder + "/majestic_million.csv")
+sites["Domain"] = sites["Domain"].astype("string")
+websites = sites["Domain"].apply(lambda x: "https://" + x)
+
+
+#block popups
+options=webdriver.firefox.options.Options()
+options.set_preference("dom.popup_maximum", 0)
+
+
+driver = webdriver.Firefox(options=options)
+#install the addon
 addon_path = project_folder + "/v1"
 driver.install_addon(path=addon_path, temporary=True)
 
