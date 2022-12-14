@@ -7,6 +7,7 @@ import os
 scraper_folder = os.path.dirname(__file__)
 project_folder = os.path.dirname(scraper_folder)
 
+# reads data from csv obatained from https://moz.com/top500
 sites = pd.read_csv(scraper_folder + "/top500Domains.csv")
 sites["Root Domain"] = sites["Root Domain"].astype("string")
 websites = sites["Root Domain"].apply(lambda x: "https://" + x)
