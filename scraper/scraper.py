@@ -36,7 +36,8 @@ for link in websites[0:100]:
         for my_link in hrefs[0:9]:
             driver.get(my_link)
             j += 1
-            print("get #: " + str(j) + " was " + my_link)
+            print("get #" + str(j) + " was " + link)
+
             time.sleep(7)
     except Exception as e:
         #print(str(e))
