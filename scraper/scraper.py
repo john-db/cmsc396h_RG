@@ -16,51 +16,31 @@ driver = webdriver.Firefox()
 addon_path = project_folder + "/v1"
 driver.install_addon(path=addon_path, temporary=True)
 
+i = 0
 j = 0
-for link in websites[0:50]:
-    failed = False
+for link in websites[0:100]:
+    i += 1
+    print("outer link: " + str(i))
     try:
         driver.get(link)
         j += 1
-        print("get #: " + str(j) + " was " + link)
+        print("get #" + str(j) + " was " + link)
+
         time.sleep(7)
-    except Exception as e:
-        failed = True
-        #print(str(e))
-        print("error on " + link)
-    
-    if not failed:
-        elems_raw = driver.find_elements(By.XPATH, '//a[@href]')
+
+        elems = driver.find_elements(By.XPATH, '//a[@href]')
         hrefs = []
-        for elem in elems_raw:
+        for elem in elems:
             hrefs.append(elem.get_attribute("href"))
 
-        count = 0
-        for my_link in hrefs:
-            try:
-                driver.get(my_link)
-                j += 1
-                print("get #: " + str(j) + " was " + my_link)
-                count += 1
-                if count >= 10:
-                    break
-                time.sleep(7)
-            except Exception as e:
-                print("error on " + my_link)
-                #print(str(e))
-
-        #if there weren't enough hrefs, we can try the original link some more 
-        # to try to get the same amount of data for each domain
-        while count < 10:
-            try:
-                driver.get(link)
-                j += 1
-                print("get #: " + str(j) + " was " + link)
-                time.sleep(7)
-            except Exception as e:
-                #print(str(e))
-                print("error on " + link)
-    print("NEXT OUTER LINK")
+        for my_link in hrefs[0:9]:
+            driver.get(my_link)
+            j += 1
+            print("get #: " + str(j) + " was " + my_link)
+            time.sleep(7)
+    except Exception as e:
+        #print(str(e))
+        print("error on " + link)
     
 # this while loop is so that the program doesn't terminate, so that 
 # so we can go in an extract the data. Can remove this
