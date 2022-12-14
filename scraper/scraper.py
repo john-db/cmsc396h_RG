@@ -13,8 +13,8 @@ project_folder = os.path.dirname(scraper_folder)
 # sites["Root Domain"] = sites["Root Domain"].astype("string")
 # websites = sites["Root Domain"].apply(lambda x: "https://" + x)
 
-# reads data from csv obatained from https://majestic.com/reports/majestic-million
-sites = pd.read_csv(scraper_folder + "/majestic_million.csv")
+# reads data from csv obatained from https://majestic.com/reports/majestic-million, the csv file is the first 1000 rows b/c the full file was too large
+sites = pd.read_csv(scraper_folder + "/majestic_thousand.csv")
 sites["Domain"] = sites["Domain"].astype("string")
 websites = sites["Domain"].apply(lambda x: "https://" + x)
 
@@ -49,7 +49,7 @@ for link in websites[0:100]:
         for my_link in hrefs[0:9]:
             driver.get(my_link)
             j += 1
-            print("get #" + str(j) + " was " + link)
+            print("get #" + str(j) + " was " + my_link)
 
             time.sleep(7)
     except Exception as e:
