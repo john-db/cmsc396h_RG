@@ -48,12 +48,15 @@ for link in websites[0:100]:
         for elem in elems:
             hrefs.append(elem.get_attribute("href"))
 
-        for my_link in hrefs[0:9]:
-            driver.get(my_link)
-            j += 1
-            print("get #" + str(j) + " was " + my_link)
+        for my_link in hrefs:
+            try:
+                driver.get(my_link)
+                j += 1
+                print("get #" + str(j) + " was " + my_link)
 
-            time.sleep(1)
+                time.sleep(1)
+            except Exception as e:
+                print("error on" +  my_link)
     except Exception as e:
         #print(str(e))
         print("error on " + link)
