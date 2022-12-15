@@ -29,6 +29,8 @@ driver = webdriver.Firefox(options=options)
 addon_path = project_folder + "/v1"
 driver.install_addon(path=addon_path, temporary=True)
 
+driver.set_page_load_timeout(10)
+
 i = 0
 j = 0
 for link in websites[0:100]:
@@ -39,7 +41,7 @@ for link in websites[0:100]:
         j += 1
         print("get #" + str(j) + " was " + link)
 
-        time.sleep(7)
+        time.sleep(1)
 
         elems = driver.find_elements(By.XPATH, '//a[@href]')
         hrefs = []
@@ -51,7 +53,7 @@ for link in websites[0:100]:
             j += 1
             print("get #" + str(j) + " was " + my_link)
 
-            time.sleep(7)
+            time.sleep(1)
     except Exception as e:
         #print(str(e))
         print("error on " + link)
