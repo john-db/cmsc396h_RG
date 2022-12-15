@@ -37,7 +37,7 @@ const logOnBeforeNavigate = async details => {
       //indices: 0 = tabId, 1 = hostname, 2 = count, 3 = timeStamp
       if (lastRow[0] === newRow[0] && lastRow[1] === newRow[1] && lastRow[2] === 0) {
         console.error("probably listener double fire");
-      } else if (lastRow[0] === newRow[0] && lastRow[1] === newRow[1] && newRow[3] - lastRow[3] < 1500) {
+      } else if (lastRow[0] === newRow[0] && lastRow[1] === newRow[1] && newRow[3] - lastRow[3] < 900) {
         console.error("probably listener double fire");
       } else {
         data.push(newRow);
