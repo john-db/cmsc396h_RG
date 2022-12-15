@@ -21,14 +21,17 @@ const logOnBeforeNavigate = async details => {
       return;
     }  
 
-    let hostname = extractHostname(details.url);
+    let hostname = extractHostname(details.url).trim();
     if(hostname.includes("undefined")) {
       //this happens when details.url = "about:blank" etc
       return;
     }
+    if(!hostname) {
+      return;
+    }
 
     let data = (await browser.storage.local.get("data")).data;
-    let newRow = [details.tabId, hostname, 0, details.timeStamp, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let newRow = [details.tabId, hostname, 0, details.timeStamp, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let index = findLast(details.tabId, data);
     if (index === -1) {
       data.push(newRow);
@@ -52,6 +55,8 @@ const logOnBeforeNavigate = async details => {
 };
 
 async function updateData(data, details, securityInfo) {
+  console.log(details);
+  console.log(securityInfo);
   let hostname;
     if (typeof details.documentUrl == 'undefined') {
       // console.log("docUrl undefined");
@@ -121,6 +126,44 @@ async function updateData(data, details, securityInfo) {
         data[index][15] = data[index][15] + 1;
       }
     }
+
+    if (typeof securityInfo.isNotValidAtThisTime !== 'undefined') {
+      if(securityInfo.isNotValidAtThisTime === true) {
+        data[index][16] = data[index][16] + 1;
+      } else {
+        data[index][17] = data[index][17] + 1;
+      }
+    }
+
+    if (typeof securityInfo.certificateTransparencyStatus !== 'undefined') {
+      if(securityInfo.certificateTransparencyStatus === 'not_applicable') {
+        data[index][18] = data[index][18] + 1;
+      } else if(securityInfo.certificateTransparencyStatus === 'policy_compliant') {
+        data[index][19] = data[index][19] + 1;
+      } else if(securityInfo.certificateTransparencyStatus === 'policy_not_enough_scts') {
+        data[index][20] = data[index][20] + 1;
+      } else if(securityInfo.certificateTransparencyStatus === 'policy_not_diverse_scts') {
+        data[index][21] = data[index][21] + 1;
+      }
+    }
+
+    if (typeof securityInfo.isDomainMismatch !== 'undefined') {
+      if(securityInfo.isDomainMismatch === true) {
+        data[index][22] = data[index][22] + 1;
+      } else {
+        data[index][23] = data[index][23] + 1;
+      }
+    }
+
+    if (typeof securityInfo.isUntrusted !== 'undefined') {
+      if(securityInfo.isUntrusted === true) {
+        data[index][24] = data[index][24] + 1;
+      } else {
+        data[index][25] = data[index][25] + 1;
+      }
+    }
+
+
 }
 
 function extractHostname(url) {
@@ -183,7 +226,17 @@ browser.storage.local.get().then(results => {
               "countIsExtendedValidationTrue",
               "countIsExtendedValidationFalse",
               "countIsTRRTrue",
-              "countIsTRRFalse"]);
+              "countIsTRRFalse",
+              "countIsNotValidTrue",
+              "countIsNotValidFalse",
+              "countCTSNotApplicable",
+              "countCTSPolicyCompliant",
+              "countCTSPolicyNotEnoughSCTS",
+              "countCTSPolicyNotDiverseSCTS",
+              "countIsDomainMismatchTrue",
+              "countIsDomainMismatchFalse",
+              "countIsUntrustedTrue",
+              "countIsUntrustedFalse"]);
     browser.storage.local.set({data}).then(console.log("Data initialized"), error => {console.error(error);});
   }
 
