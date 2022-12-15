@@ -33,7 +33,7 @@ driver.set_page_load_timeout(10)
 
 i = 0
 j = 0
-for link in websites[0:100]:
+for link in websites[0:200]:
     i += 1
     print("outer link: " + str(i))
     try:
@@ -48,7 +48,7 @@ for link in websites[0:100]:
         for elem in elems:
             hrefs.append(elem.get_attribute("href"))
 
-        for my_link in hrefs:
+        for my_link in hrefs[0:10]:
             try:
                 driver.get(my_link)
                 j += 1
@@ -56,7 +56,7 @@ for link in websites[0:100]:
 
                 time.sleep(1)
             except Exception as e:
-                print("error on" +  my_link)
+                print("error on " +  my_link)
     except Exception as e:
         #print(str(e))
         print("error on " + link)
